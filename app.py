@@ -53,18 +53,30 @@ def mirror(name):
 
 
 # TODO: Implement the rest of the API here!
-@app.route("/users/")
+@app.route("/users/", methods=["GET", "POST"])
 def users():
-    team = request.args.get("team")
-    if isinstance(team, str):
-        userList = []
-        for user in db.get("users"):
-            if user["team"] == team:
-                userList.append(user)
-        data = {"users": userList}
-    else:
-        data = {"users": db.get("users")}
-    return create_response(data)
+    if request.method == "GET":
+        team = request.args.get("team")
+        if isinstance(team, str):
+            userList = []
+            for user in db.get("users"):
+                if user["team"] == team:
+                    userList.append(user)
+            data = {"users": userList}
+        else:
+            data = {"users": db.get("users")}
+        return create_response(data)
+    elif request.method == "POST":
+        data = request.get_json()
+        name = data.get("name")
+        age = data.get("age")
+        team = data.get("team")
+        if not (
+            isinstance(name, str) and isinstance(age, int) and isinstance(team, str)
+        ):
+            return create_response(status=422, message="Not all fields provided!")
+        info = {"id": -1, "name": name, "age": age, "team:": team}
+        return create_response(status=201, data=db.create("users", info))
 
 
 @app.route("/users/<id>")
