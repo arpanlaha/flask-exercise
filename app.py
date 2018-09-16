@@ -79,13 +79,19 @@ def users():
         return create_response(status=201, data=db.create("users", info))
 
 
-@app.route("/users/<id>")
+@app.route("/users/<id>", methods=["GET", "PUT"])
 def userid(id):
     found = False
     for user in db.get("users"):
         if user["id"] == int(id):
-            return create_response(user)
             found = True
+            if request.method == "GET":
+                return create_response(user)
+            elif request.method == "PUT":
+                info = request.get_json()
+                return create_response(
+                    status=202, data=db.updateById("users", int(id), info)
+                )
     if not found:
         return create_response(status=404, message="User not found!")
 
