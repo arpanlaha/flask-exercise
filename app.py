@@ -55,9 +55,25 @@ def mirror(name):
 # TODO: Implement the rest of the API here!
 @app.route("/users/")
 def users():
-    # print(type(db.get('users')))
     data = {"users": db.get("users")}
+    print(type(db.get("users")[1]))
     return create_response(data)
+
+
+@app.route("/users/<id>")
+def userid(id):
+    #print("start")
+    found = False
+    for user in db.get("users"):
+        #print("user")
+        if (user["id"] == int(id)):
+            print(type(user["id"]))
+            return create_response(user)
+            found = True
+    #print("loop end")
+    if not found:
+        #print("not found")
+        return create_response(status=404, message="User not found!")
 
 
 """
