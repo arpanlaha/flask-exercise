@@ -53,7 +53,7 @@ def mirror(name):
 
 
 # TODO: Implement the rest of the API here!
-@app.route("/users/", methods=["GET", "POST"])
+@app.route("/users", methods=["GET", "POST"])
 def users():
     if request.method == "GET":
         team = request.args.get("team")
@@ -79,19 +79,19 @@ def users():
         return create_response(status=201, data=db.create("users", info))
 
 
-@app.route("/users/<id>", methods=["GET", "PUT"])
+@app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
 def userid(id):
     found = False
     for user in db.get("users"):
         if user["id"] == int(id):
             found = True
             if request.method == "GET":
-                return create_response(user)
+                return create_response({"user": db.getById("users", int(id))})
             elif request.method == "PUT":
                 info = request.get_json()
-                return create_response(
-                    status=202, data=db.updateById("users", int(id), info)
-                )
+                return create_response(data=db.updateById("users", int(id), info))
+            elif request.method == "DELETE":
+                return create_response(data=db.deleteById("users", int(id)))
     if not found:
         return create_response(status=404, message="User not found!")
 
