@@ -75,8 +75,8 @@ def users():
             isinstance(name, str) and isinstance(age, int) and isinstance(team, str)
         ):
             return create_response(status=422, message="Not all fields provided!")
-        info = {"id": -1, "name": name, "age": age, "team:": team}
-        return create_response(status=201, data=db.create("users", info))
+        info = {"id": -1, "name": name, "age": age, "team": team}
+        return create_response(status=201, data={"user": db.create("users", info)})
 
 
 @app.route("/users/<id>", methods=["GET", "PUT", "DELETE"])
@@ -89,7 +89,9 @@ def userid(id):
                 return create_response({"user": db.getById("users", int(id))})
             elif request.method == "PUT":
                 info = request.get_json()
-                return create_response(data=db.updateById("users", int(id), info))
+                return create_response(
+                    data={"user": db.updateById("users", int(id), info)}
+                )
             elif request.method == "DELETE":
                 return create_response(data=db.deleteById("users", int(id)))
     if not found:
