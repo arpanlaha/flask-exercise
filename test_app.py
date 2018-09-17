@@ -31,6 +31,12 @@ def tests_get_users_with_team(client):
     assert len(res_users) == 2
     assert res_users[1]["name"] == "Tim"
 
+    res = client.get("/users?team=fake")
+    assert res.status_code == 200
+
+    res_users = res.json["result"]["users"]
+    assert len(res_users) == 0
+
 
 def test_get_user_id(client):
     res = client.get("/users/1")
@@ -39,3 +45,7 @@ def test_get_user_id(client):
     res_user = res.json["result"]["user"]
     assert res_user["name"] == "Aria"
     assert res_user["age"] == 19
+
+    res = client.get("/users/5")
+    assert res.status_code == 404
+
